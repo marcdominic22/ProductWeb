@@ -93,6 +93,27 @@ public class ProductsEndpointTest : BaseTestFixture
     }
 
     [Test]
+    public async Task ShouldUpdateProduct()
+    {
+        var command = new UpdateProductCommand
+        {
+            Id = 15,
+            ProductName = "Updated List Product",
+            Price = 20,
+            Tax = 0.5
+        };
+
+        await SendAsync(command);
+
+        var list = await FindAsync<Product>(command.Id);
+
+        list.Should().NotBeNull();
+        list!.Name.Should().Be(command.ProductName);
+        list.LastModifiedBy.Should().NotBeNull();
+    }
+
+    
+    [Test]
     public async Task UpdateShouldRequireValidProductId()
     {
         var command = new UpdateProductCommand
@@ -105,37 +126,5 @@ public class ProductsEndpointTest : BaseTestFixture
             Tax = 23.1
         };
         await FluentActions.Invoking(() => SendAsync(command)).Should().ThrowAsync<NotFoundException>();
-    }
-
-
-    [Test]
-    public async Task ShouldUpdateProduct()
-    {
-        var userId = await RunAsDefaultUserAsync();
-
-        var listId = await SendAsync(new CreateProductCommand
-        {
-            Data = new(){
-                Name = "Other Product",
-                Description = "A Create Test Product for Seeding",
-                SupplierName = "Create Test Supplier",
-                Price = 225,
-                Tax = 23.1
-            }
-        });
-
-        var command = new UpdateProductCommand
-        {
-            Id = listId,
-            ProductName = "Updated List Product"
-        };
-
-        await SendAsync(command);
-
-        var list = await FindAsync<Product>(listId);
-
-        list.Should().NotBeNull();
-        list!.Name.Should().Be(command.ProductName);
-        list.LastModifiedBy.Should().NotBeNull();
     }
 }

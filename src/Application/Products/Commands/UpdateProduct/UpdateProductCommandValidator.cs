@@ -16,13 +16,9 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
                 .WithErrorCode("Unique");
 
         RuleFor(v => v.Price)
-            .NotNull()
-            .NotEmpty()
             .GreaterThanOrEqualTo(0).WithMessage("Price should not be negative.");
 
         RuleFor(v => v.Tax)
-            .NotNull()
-            .NotEmpty()
             .GreaterThanOrEqualTo(0).WithMessage("Price should not be negative.");
     }
 
