@@ -1,0 +1,54 @@
+﻿@page "/products"
+@using ClientApp.Data
+@using ProductCRUD.Application.Common.Dtos
+@inject ProductService ProductService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Products List</PageTitle>
+
+<h3>Products</h3>
+<p>
+    <button class="btn btn-primary" @onclick="CreateProduct">Create Product</button>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Supplier</th>
+            <th>Date Created</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in ProductsRes)
+        {
+            <tr>
+                <td>@product.Id</td>
+                <td>@product.Name</td>
+                <td>@product.SupplierName</td>
+                <td>@product.DateCreated</td>
+                <td><button @onclick="() => EditProduct(product.Id)">Edit</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    List<ProductDto> ProductsRes = new List<ProductDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ProductsRes = await ProductService.GetProducts();
+    }
+
+    private void EditProduct(int id)
+    {
+        NavigationManager.NavigateTo($"/products/edit/{id}");
+    }
+
+    private void CreateProduct()
+    {
+        NavigationManager.NavigateTo("/products/create");
+    }
+}

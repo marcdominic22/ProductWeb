@@ -1,0 +1,55 @@
+﻿@page "/products/create"
+@using ClientApp.Data
+@using ProductCRUD.Application.Common.Dtos
+@using ProductCRUD.Application.Products.Commands.CreateProduct
+@inject ProductService ProductService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h3>Create Product</h3>
+
+<EditForm Model="NewProduct" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <InputText id="name" @bind-Value="NewProduct.Name" class="form-control" />
+        <ValidationMessage For="@(() => NewProduct.Name)" />
+        <label for="sname">Supplier Name:</label>
+        <InputText id="sname" @bind-Value="NewProduct.SupplierName" class="form-control" />
+        <ValidationMessage For="@(() => NewProduct.SupplierName)" />
+        <label for="desc">Description:</label>
+        <InputText id="desc" @bind-Value="NewProduct.Description" class="form-control" />
+        <ValidationMessage For="@(() => NewProduct.Description)" />
+        <label for="price">Price:</label>
+        <InputNumber id="price" @bind-Value="NewProduct.Price" class="form-control" />
+        <ValidationMessage For="@(() => NewProduct.Price)" />
+        <label for="tax">Tax:</label>
+        <InputNumber id="tax" @bind-Value="NewProduct.Tax" class="form-control" />
+        <ValidationMessage For="@(() => NewProduct.Tax)" />
+    </div>
+
+    <!-- Add other fields for creating a product -->
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</EditForm>
+
+@code {
+    private ProductDto NewProduct = new ProductDto();
+
+    private async Task HandleSubmit()
+    {
+        var productCommand = new CreateProductCommand
+        {
+            Data = NewProduct
+        };
+
+        // Call API to create new product
+        await ProductService.CreateProduct(productCommand);
+
+        // Redirect to products page after creation
+        NavigationManager.NavigateTo("/products");
+    }
+}
