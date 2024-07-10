@@ -17,7 +17,7 @@
             <th>Name</th>
             <th>Supplier</th>
             <th>Date Created</th>
-            <th></th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -28,7 +28,10 @@
                 <td>@product.Name</td>
                 <td>@product.SupplierName</td>
                 <td>@product.DateCreated</td>
-                <td><button @onclick="() => EditProduct(product.Id)">Edit</button></td>
+                <td>
+                    <button @onclick="() => EditProduct(product.Id)">Edit</button>
+                    <button @onclick="() => DeleteProduct(product.Id)">Delete</button>
+                </td>
             </tr>
         }
     </tbody>
@@ -50,5 +53,16 @@
     private void CreateProduct()
     {
         NavigationManager.NavigateTo("/products/create");
+    }
+
+    private async Task DeleteProduct(int id)
+    {
+        // You might want to add confirmation logic here before deleting
+
+        // Call your ProductService to delete the product
+        await ProductService.DeleteProductById(id);
+
+        // After deletion, refresh the list of products
+        ProductsRes = await ProductService.GetProducts();
     }
 }

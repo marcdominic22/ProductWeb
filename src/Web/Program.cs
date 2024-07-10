@@ -35,10 +35,12 @@ try
     app.UseHttpsRedirection();
     app.UseStaticFiles();
 
+    app.UseOpenApi();
     app.UseSwaggerUi(settings =>
     {
         settings.Path = "/api";
         settings.DocumentPath = "/api/specification.json";
+        
     });
 
     app.MapControllerRoute(
@@ -54,6 +56,9 @@ try
     app.Map("/", () => Results.Redirect("/api"));
 
     app.MapEndpoints();
+
+    app.UseAuthentication(); // Add this line
+    app.UseAuthorization();  // Add this line
 
     app.Run();
 }

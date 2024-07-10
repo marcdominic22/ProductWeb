@@ -7,14 +7,17 @@ namespace ClientApp.Data;
 public class ProductService
 {
     private readonly HttpClient _httpClient;
+    private readonly ITokenManagerService _tokenManager;
 
-    public ProductService(HttpClient httpClient)
+    public ProductService(HttpClient httpClient, ITokenManagerService tokenManager)
     {
         _httpClient = httpClient;
+        _tokenManager = tokenManager;
     }
+    
 
     public async Task<List<ProductDto>> GetProducts()
-    {
+    {    
         var response = await _httpClient.GetAsync("api/products");
 
         // Ensure success status code (200-299)

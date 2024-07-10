@@ -1,0 +1,92 @@
+﻿@page "/register"
+@using System.ComponentModel.DataAnnotations
+@using ClientApp.Data
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject UserService UserService
+
+<PageTitle>Register</PageTitle>
+
+<h3>Register</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p class="text-danger">@ErrorMessage</p>
+}
+
+<EditForm Model="@registrationModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <InputText id="email" @bind-Value="registrationModel.Email" class="form-control" />
+        <ValidationMessage For="@(() => registrationModel.Email)" />
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password</label>
+        <InputText id="password" @bind-Value="registrationModel.Password" type="password" class="form-control" />
+        <ValidationMessage For="@(() => registrationModel.Password)" />
+    </div>
+
+    <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <InputText id="confirmPassword" @bind-Value="confirmPassword" type="password" class="form-control" @onsubmit="ValidateConfirmPassword" />
+        <ValidationMessage For="@(() => confirmPasswordValidationMessage)" />
+    </div>
+    <button type="submit" class="btn btn-primary">Register</button>
+</EditForm>
+
+@code {
+    private LoginModel registrationModel = new LoginModel();
+    private string ErrorMessage = string.Empty;
+    private string confirmPassword = "";
+    private string confirmPasswordValidationMessage = string.Empty;
+
+    private void ValidateConfirmPassword()
+    {
+        if (registrationModel.Password != confirmPassword)
+        {
+            confirmPasswordValidationMessage = "The password and confirmation password do not match.";
+        }
+        else
+        {
+            confirmPasswordValidationMessage = string.Empty;
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            // Clear previous error messages
+            ErrorMessage = string.Empty;
+
+            // Check if there are validation errors
+            if (!string.IsNullOrEmpty(confirmPasswordValidationMessage))
+            {
+                ErrorMessage = confirmPasswordValidationMessage;
+                return; // Exit early if there's a validation error
+            }
+
+            // Proceed with registration logic
+            var response = await UserService.Register(registrationModel);
+
+            if (response)
+            {
+                // Registration successful, navigate to login page or dashboard
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                // Handle registration failure
+                ErrorMessage = "Failed to register. Please try again.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error: {ex.Message}";
+        }
+    }
+}

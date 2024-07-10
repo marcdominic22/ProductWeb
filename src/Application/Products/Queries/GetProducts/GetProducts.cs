@@ -18,7 +18,7 @@ public class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, List<Pr
 
     public async Task<List<ProductDto>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {
-        var query = await _repository.ReadAll();
+        var query = await _repository.ReadAll(orderBy: x => x.Id);
 
         if (!query.Any() || query == null)
         {

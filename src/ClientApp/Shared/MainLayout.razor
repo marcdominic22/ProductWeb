@@ -1,15 +1,44 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
 
 <PageTitle>ClientApp</PageTitle>
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
+    @if (!IsLandingPage)
+    {
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    }
     <main>
         <article class="content px-4">
             @Body
         </article>
     </main>
 </div>
+
+@code {
+    private bool IsLandingPage;
+
+    protected override void OnInitialized()
+    {
+        SetIsLandingPage();
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        SetIsLandingPage();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void SetIsLandingPage()
+    {
+        IsLandingPage = Navigation.Uri.EndsWith("/") || Navigation.Uri.EndsWith("/register");
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+}

@@ -21,9 +21,9 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : class, new()
     /// Select All Records
     /// </summary>
     /// <returns></returns>
-    public async Task<IEnumerable<T>> ReadAll(Expression<Func<T, bool>>? expression = null)
+    public async Task<IEnumerable<T>> ReadAll(Expression<Func<T, bool>>? expression = null, Expression<Func<T, object>>? orderBy = null)
     {
-        return await DoReadAll(expression);
+        return await DoReadAll(expression,orderBy);
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : class, new()
         return await DoReadSingle(expression);
     }
 
-    private async Task<IEnumerable<T>> DoReadAll(Expression<Func<T, bool>>? expression = null)
+    private async Task<IEnumerable<T>> DoReadAll(Expression<Func<T, bool>>? expression = null,Expression<Func<T, object>>? orderBy = null)
     {
         try
         {
@@ -46,6 +46,12 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : class, new()
              if (expression != null)
             {
                 source = source.Where(expression);
+            }
+
+            // Apply ordering if orderBy expression is provided
+            if (orderBy != null)
+            {
+                source = source.OrderBy(orderBy);
             }
 
             return await source.AsNoTracking().ToListAsync();

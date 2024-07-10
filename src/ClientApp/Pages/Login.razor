@@ -1,0 +1,47 @@
+﻿@page "/"
+@using ClientApp.Data
+@inject NavigationManager Navigation
+@inject UserService UserService // Inject UserService
+
+<PageTitle>Login</PageTitle>
+
+<h3>Login</h3>
+
+<EditForm Model="LoginModel" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <InputText id="email" @bind-Value="LoginModel.Email" class="form-control" />
+        <ValidationMessage For="@(() => LoginModel.Email)" />
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <InputText id="password" @bind-Value="LoginModel.Password" type="password" class="form-control" />
+        <ValidationMessage For="@(() => LoginModel.Password)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Login</button>
+    <p>Don't have an account? <a href="/register" class="btn btn-link">Signup</a></p>
+</EditForm>
+
+@code {
+    private LoginModel LoginModel = new LoginModel();
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            await UserService.Login(LoginModel); // Call the instance method on UserService
+            // Handle successful login, e.g., navigate to another page
+            Navigation.NavigateTo("/index");
+        }
+        catch (Exception ex)
+        {
+            // Handle exception, e.g., display error message to user
+            Console.WriteLine($"Error logging in: {ex.Message}");
+        }
+    }
+}
